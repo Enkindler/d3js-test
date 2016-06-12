@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="../node_modules/d3/d3.js"></script>
+    <script src="../node_modules/topojson/build/topojson.js"></script>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+   var svgWidht = 500;
+   var svgHeight = 100;
+   var rectPadding = 1;
+
+    var dataSet = [5, 10, 13, 19, 21, 25, 22, 18, 15, 13,
+        11, 12, 15, 20, 18, 17, 16, 18, 23, 25];
+
+    var svg;
+
+    svg = d3.select('body')
+            .append('svg')
+            .attr('width', svgWidht)
+            .attr('height', svgHeight);
+
+    svg.selectAll('rect')
+            .data(dataSet)
+            .enter()
+            .append('rect')
+            .attr('x',function(d, i) {
+                return i * (svgWidht / dataSet.length);
+            })
+            .attr('y',function(d){
+                return svgHeight - (d * 4) ;
+            })
+            .attr('width',svgWidht / dataSet.length - rectPadding)
+            .attr('height',function(d) {
+                return d * 4;
+            })
+            .attr('fill', function(d){
+                var blue = 255 - d * 5;
+                return 'rgb(255,0,' + blue + ' )';
+            });
+
+    svg.selectAll('text')
+            .data(dataSet)
+            .enter()
+            .append('text')
+            .text(function(d) {
+                return d;
+            })
+            .attr('x', function(d,i) {
+                return i * (svgWidht / dataSet.length) + 5;
+            })
+            .attr('y',function(d) {
+                return svgHeight - (d*4) + 15;
+
+            })
+            .attr('text-anchhor', 'middle');
+
+
+</script>
+
+
+</body>
+</html>
