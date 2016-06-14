@@ -1,7 +1,17 @@
 path {
     stroke: white;
-    stroke-width: 1px;
-    fill:black;
+    stroke-width: 1.5px;
+    fill:#000;
+    fill-opacity: .2;
+}
+
+path:hover {
+    fill: brown;
+    fill-opacity: .7;
+}
+
+svg {
+    position:relative;
 }
 
 #map {
