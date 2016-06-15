@@ -14,13 +14,93 @@
 
     <script>
         var map;
+        var g;
         var svg;
+        var svgWidht = 500;
+        var svgHeight = 500;
 
-        map = L.map('map', {center: [7.4060,-66.4013],zoom:5});
+        var circle;
+
+        map = L.map('map', {center: [7.4060,-66.4013],zoom:5,maxZoom:5, minZoom:4});
         L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')
                 .addTo(map);
 
-        svg =
+        svg = d3.select(map.getPanes().overlayPane)
+                .append('svg');
+
+        var g = svg.append('g')
+                .classed('leaflet-zoom-hide', true);
+
+        d3.json('resources/simpleGeoJson.json', drawData);
+
+        function drawData(error, collection) {
+            if(error) throw error;
+            console.log('success');
+
+            var transform = d3.geo.transform({
+                point: pointProjection
+            });
+
+            console.log('collection: ',collection);
+
+            map.on('viewreset', redraw);
+            map.on('moveend', redraw);
+
+            var circles = g.selectAll('circle')
+                    .data(collection.features)
+                    .enter()
+                    .append('circle')
+
+            redraw();
+
+            function redraw() {
+                var scale = (map.getZoom() <= 1) ? 10 : map.getZoom();
+                console.log('getZoom ', map.getZoom());
+                console.log('scale ', scale);
+                var path = d3.geo.path().projection(transform);
+                var bounds = path.bounds(collection);
+                var topLeft = bounds[0];
+                var bottomRight = bounds[1];
+
+                console.log('topLeft ', topLeft[0] + ' ' + topLeft[1]);
+                console.log('bottomRight ', bottomRight[0] + ' ' + bottomRight[1]);
+
+
+                svg.attr('width', (bottomRight[0] - topLeft[0]) * scale)
+                        .attr('height', (bottomRight[1] - topLeft[1]) * scale)
+                        .attr('left', (topLeft[0] * scale) + 'px')
+                        .attr('top', (topLeft[1] * scale) + 'px');
+
+
+                        circles
+                        .attr('cx', function(d) {
+                            return path.centroid(d)[0];
+                        })
+                        .attr('cy', function(d) {
+                            return path.centroid(d)[1];
+                        })
+                        .attr('r', '10px')
+                        .attr('fill', 'rgb(255,0,255)');
+
+
+            }
+
+        }
+
+        function pointProjection(x,y) {
+            var point = map.latLngToLayerPoint(new L.latLng(y,x));
+            this.stream.point(point.x, point.y);
+        }
+
+
+
+
+
+
+
+
+
+
     </script>
 
 </body>
